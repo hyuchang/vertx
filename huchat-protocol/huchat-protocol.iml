@@ -10,14 +10,6 @@
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.1" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.1" level="project" />
-    <orderEntry type="library" name="Gradle: io.netty:netty-buffer:4.0.33.Final" level="project" />
-    <orderEntry type="library" name="Gradle: io.netty:netty-codec-http:4.0.33.Final" level="project" />
-    <orderEntry type="library" name="Gradle: io.netty:netty-codec:4.0.33.Final" level="project" />
-    <orderEntry type="library" name="Gradle: io.netty:netty-common:4.0.33.Final" level="project" />
-    <orderEntry type="library" name="Gradle: io.netty:netty-handler:4.0.33.Final" level="project" />
-    <orderEntry type="library" name="Gradle: io.netty:netty-transport:4.0.33.Final" level="project" />
-    <orderEntry type="library" name="Gradle: io.vertx:vertx-core:3.2.1" level="project" />
     <orderEntry type="library" name="Gradle: org.projectlombok:lombok:1.16.2" level="project" />
-    <orderEntry type="module" module-name="huchat-protocol" />
   </component>
 </module>

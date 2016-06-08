@@ -1,8 +1,6 @@
-package com.hucloud.server.v1.packet;
+package com.hucloud.huchat.protocol.packet;
 
-import io.vertx.core.AsyncResultHandler;
-import io.vertx.core.Handler;
-import io.vertx.core.json.JsonObject;
+import lombok.Data;
 
 import java.util.Date;
 
@@ -16,25 +14,19 @@ import java.util.Date;
  * 작성 및 소유자 : hucloud
  * 최초 생성일   : 2016. 6. 5.
  */
-public interface Packet extends Handler {
+@Data
+public abstract class Packet  {
 
-    @Override
-    void handle(Object event);
+    private String from;
 
-    Handler getEventHandler(io.vertx.core.Handler eventHandler) throws Exception;
+    private String to;
 
-    EventType getEventType();
+    private String body;
 
-    JsonObject getPayload() throws Exception;
+    private String title;
 
-    String getFrom() throws Exception;
+    private PacketType type;
 
-    String to() throws Exception;
-
-    String body() throws Exception;
-
-    String title() throws Exception;
-
-    Date getReceivedTime() throws Exception;
+    private Date receivedDate;
 
 }

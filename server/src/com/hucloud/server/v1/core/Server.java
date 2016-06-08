@@ -1,6 +1,5 @@
 package com.hucloud.server.v1.core;
-
-import com.hucloud.server.v1.packet.*;
+import com.hucloud.huchat.protocol.packet.*;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
@@ -57,7 +56,7 @@ public class Server {
             event.handler((clientEvt) -> {
                 JsonObject message = clientEvt.toJsonObject();
                 System.out.println("Connected RegisterId : " + event.writeHandlerID());
-                System.out.println("PacketType : " + message.getString("packetTp"));
+                System.out.println("PacketType : " + message.getString("type"));
                 System.out.println("Body : " + message.getString("body"));
                 event.write(message.toString());
             });
@@ -91,7 +90,7 @@ public class Server {
     public void addDefaultListener() {
         Packet packet;
         MessageConsumer<JsonObject> consumer;
-        for ( EventType eventType : EventType.values() ) {
+        for ( PacketType eventType : PacketType.values() ) {
             consumer = mEventBus.consumer(eventType.name());
             switch (eventType.name()) {
                 case "MESSAGE"  : default : packet = new MessagePacket(); break;
@@ -99,11 +98,11 @@ public class Server {
                 case "JOIN"     : packet = new JoinPacket(); break;
                 case "READ"     : packet = new ReadPacket(); break;
             }
-            consumer.handler(packet);
+//            consumer.handler(packet);
         }
     }
 
-    public void addtListener(EventType type, Handler handler) {
+    public void addtListener(PacketType type, Handler handler) {
         MessageConsumer<String> consumer = mEventBus.consumer(type.name());
         consumer.handler(handler);
     }

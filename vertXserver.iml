@@ -28,5 +28,6 @@
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: io.netty:netty-codec:4.0.33.Final" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.projectlombok:lombok:1.16.2" level="project" />
   </component>
 </module>

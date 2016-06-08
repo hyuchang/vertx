@@ -1,5 +1,6 @@
-package com.hucloud.client.v1.listener;
-import com.hucloud.client.v1.packet.Packet;
+package com.hucloud.huchat.protocol.listener;
+
+import com.hucloud.huchat.protocol.packet.MessagePacket;
 
 /**
  * 해당 파일은 소유권은 신휴창에게 있습니다.
@@ -11,13 +12,21 @@ import com.hucloud.client.v1.packet.Packet;
  * 작성 및 소유자 : hucloud
  * 최초 생성일   : 2016. 6. 5.
  */
-public interface EventListener<T> {
-
-    void register() throws Exception;
-
-    void unregister() throws Exception;
-
-    void onReceived(Packet packet) throws Exception;
+public class MessageListener implements PacketListener<MessagePacket>  {
 
 
+    @Override
+    public void register() throws Exception {
+
+    }
+
+    @Override
+    public void unregister() throws Exception {
+
+    }
+
+    @Override
+    public void onReceived(MessagePacket packet) throws Exception {
+        System.out.println("MessageListener.onReceived:[ "+ packet.getTo() + "]:::"+ packet.getBody());
+    }
 }
