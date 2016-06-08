@@ -1,4 +1,5 @@
-package com.hucloud.client.packet;
+package com.hucloud.client.v1.listener;
+import com.hucloud.client.v1.packet.Packet;
 
 /**
  * 해당 파일은 소유권은 신휴창에게 있습니다.
@@ -10,6 +11,13 @@ package com.hucloud.client.packet;
  * 작성 및 소유자 : hucloud
  * 최초 생성일   : 2016. 6. 5.
  */
-public enum EventType {
-    MESSAGE, READ, JOIN, INVITE;
+public interface EventListener<T> {
+
+    void register() throws Exception;
+
+    void unregister() throws Exception;
+
+    void onReceived(Packet packet) throws Exception;
+
+
 }

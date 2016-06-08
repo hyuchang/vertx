@@ -1,5 +1,7 @@
-package com.hucloud.client.core;
+package com.hucloud.client.v1.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hucloud.client.v1.packet.MessagePacket;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
@@ -41,11 +43,22 @@ public class Client {
 
                 socket.handler(event1 -> {
                     System.out.println(String.format("[CLIENT] ReceiveMessage ->  %s", event1.toJsonObject()));
+                    ObjectMapper packetMapper = new ObjectMapper();
+                    try {
+
+
+                        packetMapper.readValue(event1.toString(), MessagePacket.class);
+                    }catch (Exception e) {
+
+                    }
+
+
                 });
 
-                socket.exceptionHandler((handler)->{
+                socket.exceptionHandler(handler->{
                     handler.printStackTrace();
                 });
+
                 new Thread(()->{
                     Buffer buffer;
                     Scanner scanner;

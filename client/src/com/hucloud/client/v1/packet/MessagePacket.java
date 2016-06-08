@@ -1,4 +1,4 @@
-package com.hucloud.client.packet;
+package com.hucloud.client.v1.packet;
 
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.impl.MessageImpl;
@@ -16,7 +16,13 @@ import java.util.Date;
  * 작성 및 소유자 : hucloud
  * 최초 생성일   : 2016. 6. 5.
  */
-public class ReadPacket implements Packet {
+public class MessagePacket implements Packet {
+
+    @Override
+    public void handle(Object event) {
+        MessageImpl message = (MessageImpl) event;
+        System.out.println(String.format("[Client: %s] : %s", ((MessageImpl) event).address(), message.body())  );
+    }
 
     @Override
     public Handler getEventHandler(Handler eventHandler) throws Exception {
@@ -56,13 +62,5 @@ public class ReadPacket implements Packet {
     @Override
     public Date getReceivedTime() throws Exception {
         return null;
-    }
-
-    @Override
-    public void handle(Object event) {
-        MessageImpl message = (MessageImpl) event;
-        System.out.println(String.format("[READ] Reader : %s]",  message.body()) );
-
-
     }
 }

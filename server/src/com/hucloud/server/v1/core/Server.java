@@ -27,7 +27,7 @@ public class Server {
 
     private static int LISTEN_PORT = 9313;
 
-    private static String HOST = "vertx.hutt.co.kr";
+    private static String HOST = "localhost";
 
     private EventBus mEventBus;
 

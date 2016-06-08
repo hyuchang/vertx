@@ -1,7 +1,6 @@
-package com.hucloud.client.packet;
+package com.hucloud.client.v1.packet;
 
 import io.vertx.core.Handler;
-import io.vertx.core.eventbus.impl.MessageImpl;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Date;
@@ -16,13 +15,7 @@ import java.util.Date;
  * 작성 및 소유자 : hucloud
  * 최초 생성일   : 2016. 6. 5.
  */
-public class MessagePacket implements Packet {
-
-    @Override
-    public void handle(Object event) {
-        MessageImpl message = (MessageImpl) event;
-        System.out.println(String.format("[Client: %s] : %s", ((MessageImpl) event).address(), message.body())  );
-    }
+public class JoinPacket implements Packet {
 
     @Override
     public Handler getEventHandler(Handler eventHandler) throws Exception {
@@ -62,5 +55,10 @@ public class MessagePacket implements Packet {
     @Override
     public Date getReceivedTime() throws Exception {
         return null;
+    }
+
+    @Override
+    public void handle(Object event) {
+        System.out.println( "JOIN Handler Call ");
     }
 }

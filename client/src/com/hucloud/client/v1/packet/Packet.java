@@ -1,4 +1,4 @@
-package com.hucloud.client.packet;
+package com.hucloud.client.v1.packet;
 
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;

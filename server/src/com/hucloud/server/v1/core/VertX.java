@@ -19,9 +19,7 @@ public class VertX {
 
     private static Vertx vertxInstance;
 
-    private VertX(){
-
-    }
+    private VertX(){}
 
     public synchronized static VertX getInstance(){
         if ( instance == null ) {
