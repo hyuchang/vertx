@@ -1,5 +1,7 @@
 package com.hucloud.huchat.protocol.listener;
 
+import java.io.Serializable;
+
 /**
  * 해당 파일은 소유권은 신휴창에게 있습니다.
  * 현재 오픈 소스로 공개중인 버전은 AGPL을 따르는 오픈 소스 프로젝트이며,
@@ -10,13 +12,8 @@ package com.hucloud.huchat.protocol.listener;
  * 작성 및 소유자 : hucloud
  * 최초 생성일   : 2016. 6. 5.
  */
-public interface PacketListener<T> {
-
-    void register() throws Exception;
-
-    void unregister() throws Exception;
+public interface PacketListener<T> extends Serializable{
 
     void onReceived(T packet) throws Exception;
-
 
 }

@@ -1,12 +1,16 @@
 package com.hucloud.server.v1.core;
 import com.hucloud.huchat.protocol.packet.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.AsyncResultHandler;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetServerOptions;
+import io.vertx.core.net.NetSocket;
 
 /**
  * 해당 파일은 소유권은 신휴창에게 있습니다.
@@ -48,35 +52,49 @@ public class Server {
 
     private void connection() throws Exception {
         mServer = vertx.createNetServer(serverOptions);
-        mServer.connectHandler((event) -> {
-            System.out.println("[ConnectionHandler] ");
-            System.out.println( "Connected RegisterId : " + event.writeHandlerID());
-            System.out.println( "Connected HOST : " + event.remoteAddress().host());
 
-            event.handler((clientEvt) -> {
-                JsonObject message = clientEvt.toJsonObject();
-                System.out.println("Connected RegisterId : " + event.writeHandlerID());
-                System.out.println("PacketType : " + message.getString("type"));
-                System.out.println("Body : " + message.getString("body"));
-                event.write(message.toString());
-            });
+        mServer.connectHandler(new Handler<NetSocket>() {
+            @Override
+            public void handle(final NetSocket socket) {
 
-            event.closeHandler((closeEvt) -> {
-                System.out.println("[DisConnectionHandler] ");
-                System.out.println("DisConnection RegisterId : " + event.writeHandlerID());
-                System.out.println("DisConnection HOST : " + event.remoteAddress().host());
-            });
+                System.out.println("[ Connection ] ");
+                System.out.println("Connected RegisterId : " + socket.writeHandlerID());
+                System.out.println("Connected HOST : " + socket.remoteAddress().host());
+
+                socket.handler(new Handler<Buffer>() {
+                    @Override
+                    public void handle(Buffer event) {
+                        JsonObject message = event.toJsonObject();
+                        System.out.println("Connected RegisterId : " + socket.writeHandlerID());
+                        System.out.println("PacketType : " + message.getString("type"));
+                        System.out.println("Body : " + message.getString("body"));
+                        socket.write(message.toString());
+                    }
+                });
+
+                socket.closeHandler(new Handler<Void>() {
+                    @Override
+                    public void handle(Void event) {
+                        System.out.println("[ Disconnect ] ");
+                        System.out.println("Connected RegisterId : " + socket.writeHandlerID());
+                        System.out.println("Connected HOST : " + socket.remoteAddress().host());
+                    }
+                });
+            }
         });
 
-        mServer.listen(LISTEN_PORT, (event)-> {
-            if ( event.succeeded() ) {
-                try {
-                    System.out.println("Vertx Server Running!! " + LISTEN_PORT);
-                    authenticate();
-                }catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    addDefaultListener();
+        mServer.listen(LISTEN_PORT, new AsyncResultHandler<NetServer>() {
+            @Override
+            public void handle(AsyncResult<NetServer> event) {
+                if (event.succeeded()) {
+                    try {
+                        System.out.println("Vertx Server Running!! " + LISTEN_PORT);
+                        authenticate();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        addDefaultListener();
+                    }
                 }
             }
         });

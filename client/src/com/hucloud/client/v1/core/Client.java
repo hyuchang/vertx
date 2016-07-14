@@ -3,6 +3,8 @@ package com.hucloud.client.v1.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hucloud.huchat.protocol.listener.*;
 import com.hucloud.huchat.protocol.packet.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
@@ -11,7 +13,6 @@ import io.vertx.core.net.NetSocket;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
 
 /**
  * 해당 파일은 소유권은 신휴창에게 있습니다.
@@ -25,126 +26,127 @@ import java.util.Scanner;
  */
 public class Client {
 
-    private static final String HOST = "localhost";
+    static {
+        mSocketConnection = new Connection();
+    }
 
-//    private static final String HOST = "vertx.hutt.co.kr";
+    public static Client instance;
+
+    private static Vertx vertxInstance;
+
+    private static final String HOST = "localhost";
 
     private static final int IP = 9313;
 
-    private static Vertx vertx;
+    private static NetClient mNetclient;
 
-    public static void main(String [] ar ) {
-        vertx = Vertx.vertx();
-        VertxOptions options = new VertxOptions();
-        options.setMaxEventLoopExecuteTime(Long.MAX_VALUE);
-        vertx = Vertx.vertx(options);
-        NetClient client = vertx.createNetClient().connect(IP, HOST, (event)-> {
+    private static Packet receivedPacket;
 
-            if ( event.succeeded() ) {
-                System.out.println( "Server Message Connection " + event.succeeded() );
-                NetSocket socket = event.result();
+    private PacketListener mPacketListener;
 
-                socket.handler(event1 -> {
-                    System.out.println(String.format("[CLIENT] ReceiveMessage ->  %s", event1.toJsonObject()));
-                    ObjectMapper packetMapper = new ObjectMapper();
-                    try {
-                        Class packetClass;
-                        PacketListener packetListener;
-                        switch (event1.toJsonObject().getString("type")) {
-                            case "MESSAGE" : default :
-                                packetClass = MessagePacket.class;
-                                packetListener = new MessageListener();
-                                break;
-                            case "JOIN"    :
-                                packetClass = JoinPacket.class;
-                                packetListener = new JoinListener();
-                                break;
-                            case "INVITE"  :
-                                packetClass = InvitePacket.class;
-                                packetListener = new InviteListener();
-                                break;
-                            case "READ"    :
-                                packetClass = ReadPacket.class;
-                                packetListener = new ReadListener();
-                                break;
-                        }
+    private Client socketResult;
 
-                        Packet receivedPacket = (Packet) packetMapper.readValue(event1.toString(), packetClass);
-                        packetListener.onReceived(receivedPacket);
-                    }catch (ClassCastException cce) {
-                        cce.printStackTrace();
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+    private static Connection mSocketConnection;
 
-                socket.exceptionHandler(handler->{
-                    handler.printStackTrace();
-                });
+    private static ChatManager chatManager;
 
-                new Thread(()->{
-                    Buffer buffer;
-                    Scanner scanner;
-                    String receivedMsg = "";
+    private Client() {}
 
-                    while ( true ) {
-                        System.out.println( "서버에 전송할 메세지를 입력해주세요. \n");
-                        scanner = new Scanner(System.in);
-                        if ( scanner.hasNext() ) {
-                            receivedMsg = scanner.nextLine();
-                            if ( "{end}".equals(receivedMsg)) {
-                                break;
+    public static Client getInstance() {
+        if (instance == null) {
+            instance = new Client();
+        }
+        return instance;
+    }
+
+    private static Vertx getVertxInstance() {
+        if (vertxInstance == null) {
+            VertxOptions options = new VertxOptions();
+            options.setMaxEventLoopExecuteTime(Long.MAX_VALUE);
+            vertxInstance = Vertx.factory.vertx(options);
+        }
+        return vertxInstance;
+    }
+
+    public Client init() {
+        vertxInstance = getVertxInstance();
+        return this;
+    }
+
+    public Client connect() {
+        mNetclient = vertxInstance.createNetClient().connect(IP, HOST, new Handler<AsyncResult<NetSocket>>() {
+
+            @Override
+            public void handle(AsyncResult<NetSocket> socket) {
+
+                System.out.println("Server Message Connection " + socket.succeeded());
+                NetSocket socketResult = socket.result();
+                mSocketConnection.setNativeSocket(socketResult);
+                chatManager = new ChatManager(mSocketConnection);
+                socketResult.handler(new Handler<Buffer>() {
+                    @Override
+                    public void handle(Buffer event) {
+                        System.out.println(String.format("[CLIENT] ReceiveMessage ->  %s", event.toJsonObject()));
+                        ObjectMapper packetMapper = new ObjectMapper();
+                        try {
+                            Class packetClass;
+                            switch (event.toJsonObject().getString("type")) {
+                                case "MESSAGE" : default :
+                                    packetClass = MessagePacket.class;
+                                    mPacketListener = new MessageListener();
+                                    break;
+                                case "JOIN"    :
+                                    packetClass = JoinPacket.class;
+                                    mPacketListener = new JoinListener();
+                                    break;
+                                case "INVITE"  :
+                                    packetClass = InvitePacket.class;
+                                    mPacketListener = new InviteListener();
+                                    break;
+                                case "READ"    :
+                                    packetClass = ReadPacket.class;
+                                    mPacketListener = new ReadListener();
+                                    break;
                             }
-                            buffer = Buffer.buffer(String.format(
-                                "{ " +
-                                    "\"from\" : \"%S\", " +
-                                    "\"to\" : \"%s\", " +
-                                    "\"title\" : \"%s\", " +
-                                    "\"body\" : \"%s\", " +
-                                    "\"type\" : \"%s\", " +
-                                    "\"receivedDate\" : \"%s\" " +
-                                "}"
-                            , "fromUser", "toUser" , "title", receivedMsg, "MESSAGE", new SimpleDateFormat("yyyy-MM-dd").format(new Date())));
-                            socket.write(buffer);
-                            buffer = Buffer.buffer(String.format(
-                                "{ " +
-                                    "\"from\" : \"%S\", " +
-                                    "\"to\" : \"%s\", " +
-                                    "\"title\" : \"%s\", " +
-                                    "\"body\" : \"%s\", " +
-                                    "\"type\" : \"%s\", " +
-                                    "\"receivedDate\" : \"%s\" " +
-                                "}"
-                            , "fromUser", "toUser" , "title", receivedMsg, "JOIN", new SimpleDateFormat("yyyy-MM-dd").format(new Date())));
-                            socket.write(buffer);
-                            buffer = Buffer.buffer(String.format(
-                                "{ " +
-                                    "\"from\" : \"%S\", " +
-                                    "\"to\" : \"%s\", " +
-                                    "\"title\" : \"%s\", " +
-                                    "\"body\" : \"%s\", " +
-                                    "\"type\" : \"%s\", " +
-                                    "\"receivedDate\" : \"%s\" " +
-                                "}"
-                            , "fromUser", "toUser" , "title", receivedMsg, "INVITE", new SimpleDateFormat("yyyy-MM-dd").format(new Date())));
-                            socket.write(buffer);
-                            buffer = Buffer.buffer(String.format(
-                                "{ " +
-                                    "\"from\" : \"%S\", " +
-                                    "\"to\" : \"%s\", " +
-                                    "\"title\" : \"%s\", " +
-                                    "\"body\" : \"%s\", " +
-                                    "\"type\" : \"%s\", " +
-                                    "\"receivedDate\" : \"%s\" " +
-                                "}"
-                            , "fromUser", "toUser" , "title", receivedMsg, "READ", new SimpleDateFormat("yyyy-MM-dd").format(new Date())));
-                            socket.write(buffer);
+
+                            receivedPacket = (Packet) packetMapper.readValue(event.toString(), packetClass);
+                            mPacketListener.onReceived(receivedPacket);
+                        }catch (ClassCastException cce) {
+                            cce.printStackTrace();
+                        }catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
+                });
 
-                }).start();
+                socketResult.write(
+                    Buffer.buffer(String.format(
+                        "{ " +
+                                "\"from\" : \"%S\", " +
+                                "\"to\" : \"%s\", " +
+                                "\"title\" : \"%s\", " +
+                                "\"body\" : \"%s\", " +
+                                "\"type\" : \"%s\", " +
+                                "\"receivedDate\" : \"%s\" " +
+                                "}"
+                        , "fromUser", "toUser", "title", "messsaaaaaggggggeeeee1", "MESSAGE", new SimpleDateFormat("yyyy-MM-dd").format(new Date()))));
 
             }
+
         });
+        return this;
     }
+
+    public Connection getSocketConnection(){
+        return mSocketConnection;
+    }
+
+    public ChatManager getChatManager(){
+        return chatManager;
+    }
+
+    public void addPacketListener(PacketListener listener) {
+        mPacketListener = listener;
+    }
+
 }

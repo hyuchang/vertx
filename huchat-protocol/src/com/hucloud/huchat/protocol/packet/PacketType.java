@@ -11,5 +11,5 @@ package com.hucloud.huchat.protocol.packet;
  * 최초 생성일   : 2016. 6. 5.
  */
 public enum PacketType {
-    MESSAGE, READ, JOIN, INVITE
+    MESSAGE, READ, JOIN, INVITE, PHOTO
 }

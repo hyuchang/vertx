@@ -14,17 +14,6 @@ import com.hucloud.huchat.protocol.packet.ReadPacket;
  */
 public class ReadListener implements PacketListener<ReadPacket>  {
 
-
-    @Override
-    public void register() throws Exception {
-
-    }
-
-    @Override
-    public void unregister() throws Exception {
-
-    }
-
     @Override
     public void onReceived(ReadPacket packet) throws Exception {
         System.out.println("ReadListener.onReceived:[ "+ packet.getTo() + "]:::"+ packet.getBody());

@@ -14,17 +14,6 @@ import com.hucloud.huchat.protocol.packet.InvitePacket;
  */
 public class InviteListener implements PacketListener<InvitePacket>  {
 
-
-    @Override
-    public void register() throws Exception {
-
-    }
-
-    @Override
-    public void unregister() throws Exception {
-
-    }
-
     @Override
     public void onReceived(InvitePacket packet) throws Exception {
         System.out.println("InviteListener.onReceived:[ "+ packet.getTo() + "]:::"+ packet.getBody());

@@ -1,5 +1,7 @@
 package com.hucloud.huchat.protocol.packet;
 
+import lombok.Data;
+
 /**
  * 해당 파일은 소유권은 신휴창에게 있습니다.
  * 현재 오픈 소스로 공개중인 버전은 AGPL을 따르는 오픈 소스 프로젝트이며,
@@ -10,6 +12,7 @@ package com.hucloud.huchat.protocol.packet;
  * 작성 및 소유자 : hucloud
  * 최초 생성일   : 2016. 6. 5.
  */
+@Data
 public class InvitePacket extends Packet {
 
 }

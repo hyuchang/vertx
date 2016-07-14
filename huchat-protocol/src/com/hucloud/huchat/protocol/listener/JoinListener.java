@@ -14,17 +14,6 @@ import com.hucloud.huchat.protocol.packet.JoinPacket;
  */
 public class JoinListener implements PacketListener<JoinPacket>  {
 
-
-    @Override
-    public void register() throws Exception {
-
-    }
-
-    @Override
-    public void unregister() throws Exception {
-
-    }
-
     @Override
     public void onReceived(JoinPacket packet) throws Exception {
         System.out.println("JoinPacket.onReceived:[ "+ packet.getTo() + "]:::"+ packet.getBody());

@@ -2,6 +2,7 @@ package com.hucloud.huchat.protocol.packet;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Date;
  * 최초 생성일   : 2016. 6. 5.
  */
 @Data
-public abstract class Packet  {
+public abstract class Packet implements Serializable {
 
     private String from;
 

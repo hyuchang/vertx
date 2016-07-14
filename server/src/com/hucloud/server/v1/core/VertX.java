@@ -32,7 +32,7 @@ public class VertX {
         if ( vertxInstance == null ) {
             VertxOptions options = new VertxOptions();
             options.setMaxEventLoopExecuteTime(Long.MAX_VALUE);
-            vertxInstance = Vertx.vertx(options);
+            vertxInstance = Vertx.factory.vertx(options);
         }
         return vertxInstance;
     }

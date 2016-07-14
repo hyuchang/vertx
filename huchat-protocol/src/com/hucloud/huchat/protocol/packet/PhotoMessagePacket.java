@@ -13,6 +13,6 @@ import lombok.Data;
  * 최초 생성일   : 2016. 6. 5.
  */
 @Data
-public class AllPacket extends Packet {
+public class PhotoMessagePacket extends MessagePacket {
 
 }
