@@ -76,8 +76,8 @@ public class Server {
                     @Override
                     public void handle(Void event) {
                         System.out.println("[ Disconnect ] ");
-                        System.out.println("Connected RegisterId : " + socket.writeHandlerID());
-                        System.out.println("Connected HOST : " + socket.remoteAddress().host());
+                        System.out.println("Disconnect RegisterId : " + socket.writeHandlerID());
+                        System.out.println("Disconnect HOST : " + socket.remoteAddress().host());
                     }
                 });
             }
